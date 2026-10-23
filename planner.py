@@ -42,8 +42,19 @@ async def create_plan(payload: dict[str, Any]) -> dict:
         ],
         "options": {"temperature": 0},
     }
-    async with httpx.AsyncClient(timeout=16.0) as client:
-        response = await client.post(f"{base_url}/api/chat", json=request_body)
+    
+    ollama_username = os.getenv("OLLAMA_USERNAME", "ollamauser")
+    ollama_password = os.getenv("OLLAMA_PASSWORD")
+
+    if not ollama_password:
+        raise RuntimeError("OLLAMA_PASSWORD is not configured")
+
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        response = await client.post(
+            f"{base_url}/api/chat",
+            json=request_body,
+            auth=(ollama_username, ollama_password),
+        )
         response.raise_for_status()
         data = response.json()
 
