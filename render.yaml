@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: ga5-q4-incident-agent
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MODEL_NAME
+        value: gpt-4o-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: INCIDENT_DB_PATH
+        value: /var/data/incident_state.sqlite3
+    disk:
+      name: incident-state
+      mountPath: /var/data
+      sizeGB: 1
